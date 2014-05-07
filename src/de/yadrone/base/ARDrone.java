@@ -64,6 +64,11 @@ public class ARDrone implements IARDrone, IExceptionListener {
 		this(IP_ADDRESS);
 	}
 
+	public ARDrone(VideoDecoder dec) {
+		//this(ipaddr, new XugglerDecoder());
+		this(IP_ADDRESS, dec);
+	}
+	
 	public ARDrone(String ipaddr) {
 		//this(ipaddr, new XugglerDecoder());
 		this(ipaddr, new NativeFfmpegDecoder());
