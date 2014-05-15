@@ -144,6 +144,7 @@ public class CommandManager extends AbstractManager {
 
 	public CommandManager takeOff() {
 		flatTrim();
+		logger.info("CommandManager.takeOff()");
 		q.add(new TakeOffCommand());
 		return this;
 	}
@@ -910,14 +911,15 @@ public class CommandManager extends AbstractManager {
 				setMulticonfiguration();
 			}
 		}).start();;*/
-		pool.submit(new Runnable() {
-			public void run()
-			{
-				setMulticonfiguration();
-			}
-		});
+		setMulticonfiguration();
+//		pool.submit(new Runnable() {
+//			public void run()
+//			{
+//				setMulticonfiguration();
+//			}
+//		});
 
-		waitFor(5000);
+		//waitFor(5000);
 		
 		// pmode parameter and first misc parameter are related
 		sendPMode(2);
@@ -938,7 +940,10 @@ public class CommandManager extends AbstractManager {
 	SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss.SSS");
 	
 	private synchronized void sendCommand(ATCommand c) throws InterruptedException, IOException {
-		logger.fine("send " + c.getCommandString(seq));
+		if( logger.isLoggable(Level.FINER) || ! (c instanceof KeepAliveCommand) ) {
+			logger.log( c instanceof KeepAliveCommand ? Level.FINER : Level.FINE,
+					"send " + c.getCommandString(seq));
+		}
 		
 		String config = "AT*CONFIG_IDS=" + (seq++) + ",\"" + CommandManager.SESSION_ID + "\",\"" + CommandManager.PROFILE_ID +"\",\"" + CommandManager.APPLICATION_ID + "\"" + "\r"; // AT*CONFIG_IDS=5,"aabbccdd","bbccddee","ccddeeff"
 		byte[] configPrefix = config.getBytes("ASCII");
