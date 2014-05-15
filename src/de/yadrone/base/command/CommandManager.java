@@ -889,11 +889,14 @@ public class CommandManager extends AbstractManager {
 			} 
 			catch (InterruptedException e) 
 			{
-				e.printStackTrace();
+				logger.info("Thread interrupted");
 				doStop = true;
 				excListener.exeptionOccurred(new CommandException(e));
-			} 
-			catch (Throwable t) {
+			} catch(IOException e) {
+				logger.log(Level.WARNING, "IOException", e);
+				doStop = true;
+				excListener.exeptionOccurred(new CommandException(e));
+			} catch (Throwable t) {
 				t.printStackTrace();
 				excListener.exeptionOccurred(new CommandException(t));
 			}
