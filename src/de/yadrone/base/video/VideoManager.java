@@ -109,36 +109,35 @@ public class VideoManager extends AbstractTCPManager implements ImageListener
 	public void run() {
 		if (decoder == null)
 			return;
-		try
-		{
+		try {
 			logger.info("connect ");
+
 			connect(ARDroneUtils.VIDEO_PORT);
-			
+
 			logger.info("tickle ");
 			ticklePort(ARDroneUtils.VIDEO_PORT);
-			
-//			manager.setVideoBitrateControl(VideoBitRateMode.DISABLED); // bitrate set to maximum
-			
-			logger.info("decode ");
-			/*InputStream ii = getInputStream();
-			byte buf[] = new byte[1024];
-			int rd;
-			while( (rd = ii.read(buf) ) != -1 ) {
-				oo.write(buf, 0, rd);
-				oo.flush();
-			}*/
-			decoder.decode(getInputStream());
-		}
-		catch(ConnectException ce) {
+		} catch(IOException e) {
 			logger.log(Level.WARNING, "Connect exception, quitting video thread");
 			Thread.currentThread().interrupt();
 		}
-		catch(Exception exc)
-		{
-			logger.log(Level.WARNING, "exception in video", exc);
-			excListener.exeptionOccurred(new VideoException(exc));
-		}
-		
+		if(!Thread.currentThread().isInterrupted())
+			try	{
+//				manager.setVideoBitrateControl(VideoBitRateMode.DISABLED); // bitrate set to maximum
+
+				logger.info("decode ");
+				/*InputStream ii = getInputStream();
+				byte buf[] = new byte[1024];
+				int rd;
+				while( (rd = ii.read(buf) ) != -1 ) {
+					oo.write(buf, 0, rd);
+					oo.flush();
+				}*/
+				decoder.decode(getInputStream());
+			} catch(Exception exc)	{
+				logger.log(Level.WARNING, "exception in video", exc);
+				excListener.exeptionOccurred(new VideoException(exc));
+			}
+
 		close();
 		if(!Thread.currentThread().isInterrupted()) reinitialize();
 	}
