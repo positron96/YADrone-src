@@ -97,239 +97,266 @@ public class NavDataManager extends AbstractManager
 		this.excListener = excListener;
 	}
 
-	private void setMask(boolean reset, int[] tags) {
+	private void setMask(boolean add, int[] tags) {
 		int newmask = 0;
 		for (int n = 0; n < tags.length; n++) {
 			newmask |= 1 << tags[n];
 		}
-		if (reset) {
-			mask &= ~newmask;
+		if (add) {
+			newmask = mask | newmask;
 		} else {
-			mask |= newmask;
+			newmask = mask & ~newmask;
 		}
-		maskChanged = true;
+		logger.info("setMask("+add+"; "+ java.util.Arrays.toString(tags)+") mask is now  "+Integer.toBinaryString(mask));
+		if(mask!=newmask) {
+			mask = newmask;
+			logger.info("new mask is "+Integer.toBinaryString(mask));
+			maskChanged = true;
+		}
 	}
 
 	public void addAttitudeListener(AttitudeListener attitudeListener) {
 		this.attitudeListener.add(attitudeListener);
-		setMask(this.attitudeListener.size() == 1, new int[] { DEMO_TAG, EULER_ANGLES_TAG, WIND_TAG });
+		setMask(/*this.attitudeListener.size() == 1*/true, new int[] { DEMO_TAG, EULER_ANGLES_TAG, WIND_TAG });
 	}
 
 	public void removeAttitudeListener(AttitudeListener attitudeListener) {
 		this.attitudeListener.remove(attitudeListener);
-		setMask(this.attitudeListener.size() == 0, new int[] { DEMO_TAG, EULER_ANGLES_TAG, WIND_TAG });
+		if(this.attitudeListener.isEmpty())
+			setMask(false, new int[] { DEMO_TAG, EULER_ANGLES_TAG, WIND_TAG });
 	}
 	
 	public void addAltitudeListener(AltitudeListener altitudeListener) {
 		this.altitudeListener.add(altitudeListener);
-		setMask(this.altitudeListener.size() == 1, new int[] { DEMO_TAG, ALTITUDE_TAG });
+		setMask(true, new int[] { DEMO_TAG, ALTITUDE_TAG });
 	}
 	
 	public void removeAltitudeListener(AltitudeListener altitudeListener) {
 		this.altitudeListener.remove(altitudeListener);
-		setMask(this.altitudeListener.size() == 0, new int[] { DEMO_TAG, ALTITUDE_TAG });
+		if(this.altitudeListener.isEmpty())
+			setMask(false, new int[] { DEMO_TAG, ALTITUDE_TAG });
 	}
 
 	public void addBatteryListener(BatteryListener batteryListener) {
 		this.batteryListener.add(batteryListener);
-		setMask(this.batteryListener.size() == 1, new int[] { DEMO_TAG, RAW_MEASURES_TAG });
+		setMask(true, new int[] { DEMO_TAG, RAW_MEASURES_TAG });
 	}
 	
 	public void removeBatteryListener(BatteryListener batteryListener) {
 		this.batteryListener.remove(batteryListener);
-		setMask(this.batteryListener.size() == 0, new int[] { DEMO_TAG, RAW_MEASURES_TAG });
+		if(this.batteryListener.isEmpty())
+			setMask(false, new int[] { DEMO_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void addTimeListener(TimeListener timeListener) {
 		this.timeListener.add(timeListener);
-		setMask(this.timeListener.size() == 1, new int[] { TIME_TAG });
+		setMask(true, new int[] { TIME_TAG });
 	}
 
 	public void removeTimeListener(TimeListener timeListener) {
 		this.timeListener.remove(timeListener);
-		setMask(this.timeListener.size() == 0, new int[] { TIME_TAG });
+		if(this.timeListener.isEmpty())
+			setMask(false, new int[] { TIME_TAG });
 	}
 	
 	public void addStateListener(StateListener stateListener) {
 		this.stateListener.add(stateListener);
-		setMask(this.stateListener.size() == 1, new int[] { DEMO_TAG });
+		setMask(true, new int[] { DEMO_TAG });
 	}
 
 	public void removeStateListener(StateListener stateListener) {
 		this.stateListener.remove(stateListener);
-		setMask(this.stateListener.size() == 0, new int[] { DEMO_TAG });
+		if(this.stateListener.isEmpty())
+			setMask(false, new int[] { DEMO_TAG });
 	}
 	
 	public void addVelocityListener(VelocityListener velocityListener) {
 		this.velocityListener.add(velocityListener);
-		setMask(this.velocityListener.size() == 1, new int[] { DEMO_TAG });
+		setMask(true, new int[] { DEMO_TAG });
 	}
 
 	public void removeVelocityListener(VelocityListener velocityListener) {
 		this.velocityListener.remove(velocityListener);
-		setMask(this.velocityListener.size() == 0, new int[] { DEMO_TAG });
+		if(this.velocityListener.isEmpty())
+			setMask(false, new int[] { DEMO_TAG });
 	}
 	
 	public void addVisionListener(VisionListener visionListener) {
 		this.visionListener.add(visionListener);
-		setMask(this.visionListener.size() == 1, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG,
+		setMask(true, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG,
 			VISION_TAG, VISION_PERF_TAG, VISION_RAW_TAG });
 	}
 
 	public void removeVisionListener(VisionListener visionListener) {
 		this.visionListener.remove(visionListener);
-		setMask(this.visionListener.size() == 0, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG,
+		if(this.visionListener.isEmpty())
+		setMask(false, new int[] { DEMO_TAG, TRACKERS_SEND_TAG, VISION_DETECT_TAG, VISION_OF_TAG,
 				VISION_TAG, VISION_PERF_TAG, VISION_RAW_TAG });
 	}
 	
 	public void addMagnetoListener(MagnetoListener magnetoListener) {
 		this.magnetoListener.add(magnetoListener);
-		setMask(this.magnetoListener.size() == 1, new int[] { MAGNETO_TAG });
+		setMask(true, new int[] { MAGNETO_TAG });
 	}
 
 	public void removeMagnetoListener(MagnetoListener magnetoListener) {
 		this.magnetoListener.remove(magnetoListener);
-		setMask(this.magnetoListener.size() == 0, new int[] { MAGNETO_TAG });
+		if(this.magnetoListener.isEmpty())
+			setMask(false, new int[] { MAGNETO_TAG });
 	}
 	
 	public void addAcceleroListener(AcceleroListener acceleroListener) {
 		this.acceleroListener.add(acceleroListener);
-		setMask(this.acceleroListener.size() == 1, new int[] { PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
+		setMask(true, new int[] { PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 	
 	public void removeAcceleroListener(AcceleroListener acceleroListener) {
 		this.acceleroListener.remove(acceleroListener);
-		setMask(this.acceleroListener.size() == 0, new int[] { PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
+		if(this.acceleroListener.isEmpty())
+			setMask(false, new int[] { PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void addGyroListener(GyroListener gyroListener) {
 		this.gyroListener.add(gyroListener);
-		setMask(this.gyroListener.size() == 1, new int[] { GYROS_OFFSETS_TAG, PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
+		setMask(true, new int[] { GYROS_OFFSETS_TAG, PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 	
 	public void removeGyroListener(GyroListener gyroListener) {
 		this.gyroListener.remove(gyroListener);
-		setMask(this.gyroListener.size() == 0, new int[] { GYROS_OFFSETS_TAG, PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
+		if(this.gyroListener.isEmpty())
+			setMask(false, new int[] { GYROS_OFFSETS_TAG, PHYS_MEASURES_TAG, RAW_MEASURES_TAG });
 	}
 
 	public void addUltrasoundListener(UltrasoundListener ultrasoundListener) {
 		this.ultrasoundListener.add(ultrasoundListener);
-		setMask(this.ultrasoundListener.size() == 1, new int[] { RAW_MEASURES_TAG });
+		setMask(true, new int[] { RAW_MEASURES_TAG });
 	}
 
 	public void removeUltrasoundListener(UltrasoundListener ultrasoundListener) {
 		this.ultrasoundListener.remove(ultrasoundListener);
-		setMask(this.ultrasoundListener.size() == 0, new int[] { RAW_MEASURES_TAG });
+		if(this.ultrasoundListener.isEmpty())
+			setMask(false, new int[] { RAW_MEASURES_TAG });
 	}
 	
 	public void addAdcListener(AdcListener adcListener) {
 		this.adcListener.add(adcListener);
-		setMask(this.adcListener.size() == 1, new int[] { ADC_DATA_FRAME_TAG });
+		setMask(true, new int[] { ADC_DATA_FRAME_TAG });
 	}
 	
 	public void removeAdcListener(AdcListener adcListener) {
 		this.adcListener.remove(adcListener);
-		setMask(this.adcListener.size() == 0, new int[] { ADC_DATA_FRAME_TAG });
+		if(this.adcListener.isEmpty())
+			setMask(false, new int[] { ADC_DATA_FRAME_TAG });
 	}
 
 	public void addCounterListener(CounterListener counterListener) {
 		this.counterListener.add(counterListener);
-		setMask(this.counterListener.size() == 1, new int[] { GAMES_TAG });
+		setMask(true, new int[] { GAMES_TAG });
 	}
 
 	public void removeCounterListener(CounterListener counterListener) {
 		this.counterListener.remove(counterListener);
-		setMask(this.counterListener.size() == 0, new int[] { GAMES_TAG });
+		if(this.counterListener.isEmpty())
+			setMask(false, new int[] { GAMES_TAG });
 	}
 	
 	public void addPressureListener(PressureListener pressureListener) {
 		this.pressureListener.add(pressureListener);
-		setMask(this.pressureListener.size() == 1, new int[] { KALMAN_PRESSURE_TAG, PRESSURE_RAW_TAG });
+		setMask(true, new int[] { KALMAN_PRESSURE_TAG, PRESSURE_RAW_TAG });
 	}
 
 	public void removePressureListener(PressureListener pressureListener) {
 		this.pressureListener.remove(pressureListener);
-		setMask(this.pressureListener.size() == 0, new int[] { KALMAN_PRESSURE_TAG, PRESSURE_RAW_TAG });
+		if(this.pressureListener.isEmpty())
+			setMask(false, new int[] { KALMAN_PRESSURE_TAG, PRESSURE_RAW_TAG });
 	}
 	
 	public void addTemperatureListener(TemperatureListener temperatureListener) {
 		this.temperatureListener.add(temperatureListener);
-		setMask(this.temperatureListener.size() == 1, new int[] { PRESSURE_RAW_TAG });
+		setMask(true, new int[] { PRESSURE_RAW_TAG });
 	}
 
 	public void removeTemperatureListener(TemperatureListener temperatureListener) {
 		this.temperatureListener.remove(temperatureListener);
-		setMask(this.temperatureListener.size() == 0, new int[] { PRESSURE_RAW_TAG });
+		if(this.temperatureListener.isEmpty())
+			setMask(false, new int[] { PRESSURE_RAW_TAG });
 	}
 	
 	public void addWindListener(WindListener windListener) {
 		this.windListener.add(windListener);
-		setMask(this.windListener.size() == 1, new int[] { WIND_TAG });
+		setMask(true, new int[] { WIND_TAG });
 	}
 
 	public void removeWindListener(WindListener windListener) {
 		this.windListener.remove(windListener);
-		setMask(this.windListener.size() == 0, new int[] { WIND_TAG });
+		if(this.windListener.isEmpty())
+			setMask(false, new int[] { WIND_TAG });
 	}
 	
 	public void addVideoListener(VideoListener videoListener) {
 		this.videoListener.add(videoListener);
-		setMask(this.videoListener.size() == 1, new int[] { HDVIDEO_STREAM_TAG, VIDEO_STREAM_TAG });
+		setMask(true, new int[] { HDVIDEO_STREAM_TAG, VIDEO_STREAM_TAG });
 	}
 
 	public void removeVideoListener(VideoListener videoListener) {
 		this.videoListener.remove(videoListener);
-		setMask(this.videoListener.size() == 0, new int[] { HDVIDEO_STREAM_TAG, VIDEO_STREAM_TAG });
+		if(this.videoListener.isEmpty())
+			setMask(false, new int[] { HDVIDEO_STREAM_TAG, VIDEO_STREAM_TAG });
 	}
 	
 	public void addWifiListener(WifiListener wifiListener) {
 		this.wifiListener.add(wifiListener);
-		setMask(this.wifiListener.size() == 1, new int[] { WIFI_TAG });
+		setMask(true, new int[] { WIFI_TAG });
 	}
 
 	public void removeWifiListener(WifiListener wifiListener) {
 		this.wifiListener.remove(wifiListener);
-		setMask(this.wifiListener.size() == 0, new int[] { WIFI_TAG });
+		if(this.wifiListener.isEmpty())
+			setMask(true, new int[] { WIFI_TAG });
 	}
 	
 	public void addZimmu3000Listener(Zimmu3000Listener zimmu3000Listener) {
 		this.zimmu3000Listener.add(zimmu3000Listener);
-		setMask(this.zimmu3000Listener.size() == 1, new int[] { ZIMMU_3000_TAG });
+		setMask(true, new int[] { ZIMMU_3000_TAG });
 	}
 
 	public void removeZimmu3000Listener(Zimmu3000Listener zimmu3000Listener) {
 		this.zimmu3000Listener.remove(zimmu3000Listener);
-		setMask(this.zimmu3000Listener.size() == 0, new int[] { ZIMMU_3000_TAG });
+		if(this.zimmu3000Listener.isEmpty())
+			setMask(false, new int[] { ZIMMU_3000_TAG });
 	}
 	
 	public void addPWMlistener(PWMlistener pwmlistener) {
 		this.pwmlistener.add(pwmlistener);
-		setMask(this.pwmlistener.size() == 1, new int[] { PWM_TAG });
+		setMask(true, new int[] { PWM_TAG });
 	}
 
 	public void removePWMlistener(PWMlistener pwmlistener) {
 		this.pwmlistener.remove(pwmlistener);
-		setMask(this.pwmlistener.size() == 0, new int[] { PWM_TAG });
+		if(this.pwmlistener.isEmpty())
+			setMask(false, new int[] { PWM_TAG });
 	}
 	
 	public void addReferencesListener(ReferencesListener referencesListener) {
 		this.referencesListener.add(referencesListener);
-		setMask(this.referencesListener.size() == 1, new int[] { RC_REFERENCES_TAG, REFERENCES_TAG });
+		setMask(true, new int[] { RC_REFERENCES_TAG, REFERENCES_TAG });
 	}
 	
 	public void removeReferencesListener(ReferencesListener referencesListener) {
 		this.referencesListener.remove(referencesListener);
-		setMask(this.referencesListener.size() == 0, new int[] { RC_REFERENCES_TAG, REFERENCES_TAG });
+		if(this.referencesListener.isEmpty())
+			setMask(false, new int[] { RC_REFERENCES_TAG, REFERENCES_TAG });
 	}
 
 	public void addTrimsListener(TrimsListener trimsListener) {
 		this.trimsListener.add(trimsListener);
-		setMask(this.trimsListener.size() == 1, new int[] { TRIMS_TAG });
+		setMask(true, new int[] { TRIMS_TAG });
 	}
 
 	public void removeTrimsListener(TrimsListener trimsListener) {
 		this.trimsListener.remove(trimsListener);
-		setMask(this.trimsListener.size() == 0, new int[] { TRIMS_TAG });
+		if(this.trimsListener.isEmpty())
+			setMask(false, new int[] { TRIMS_TAG });
 	}
 	
 	@Override
@@ -358,9 +385,9 @@ public class NavDataManager extends AbstractManager
 					if (s.isNavDataBootstrap()) {
 						// presumably iso setting the demo option we can already ask for the options we want here
 						manager.setNavDataDemo(true);
-						System.out.println("Navdata Bootstrapped");
+						logger.info("Navdata Bootstrapped");
 					} else {
-						System.out.println("Navdata was already bootstrapped");
+						logger.info("Navdata was already bootstrapped");
 					}
 					bootstrapping = false;
 				}
@@ -379,6 +406,7 @@ public class NavDataManager extends AbstractManager
 
 				// TODO bootstrapping probably be handled by commandmanager
 				if (!bootstrapping && maskChanged) {
+					logger.info("sending navdata options: "+Integer.toBinaryString(mask) );
 					manager.setNavDataDemo(false);
 					manager.setNavDataOptions(mask);
 					maskChanged = false;

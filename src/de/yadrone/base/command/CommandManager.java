@@ -32,7 +32,6 @@ import de.yadrone.base.exception.IExceptionListener;
 import de.yadrone.base.manager.AbstractManager;
 import de.yadrone.base.navdata.CadType;
 import de.yadrone.base.utils.ARDroneUtils;
-import dronecontrolcenter.ControlWindow;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
@@ -346,6 +345,7 @@ public class CommandManager extends AbstractManager {
 	 * @param mask  I honestly do not know, where values for this mask are defined. Have a look at the User Guide (page 74 in v2.0.1)
 	 */
 	public CommandManager setNavDataOptions(int mask) {
+		logger.info("mask is "+Integer.toHexString(mask));
 		q.add(new ConfigureCommand("general:navdata_options", mask));
 		return this;
 	}
